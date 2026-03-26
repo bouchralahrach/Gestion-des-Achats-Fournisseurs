@@ -6,15 +6,13 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Faker\Factory as Faker; // 1. Add this import
 
 /**
  * @extends Factory<User>
  */
 class UserFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
     protected static ?string $password;
 
     /**
@@ -24,19 +22,23 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        // 2. Manually create the faker instance
+        $faker = Faker::create();
+
         return [
-            // Changed fake() to $this->faker
-            'name' => $this->faker->name(),
-            'email' => $this->faker->unique()->safeEmail(),
+            'name'              => $faker->name(),
+            'email'             => $faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'password'          => static::$password ??= Hash::make('password'),
+            'remember_token'    => Str::random(10),
+            // Add your custom fields here so they aren't null in the DB
+            'prenom'            => $faker->firstName(),
+            'telephone'         => $faker->phoneNumber(),
+            'departement'       => $faker->word(),
+            'is_active'         => true,
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
     public function unverified(): static
     {
         return $this->state(fn (array $attributes) => [
