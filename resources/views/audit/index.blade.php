@@ -3,6 +3,33 @@
 @section('page-title', 'Journal d\'Audit')
 @section('breadcrumb') Journal d'Audit @endsection
 
+@push('styles')
+<style>
+    /* CSS spécifique pour améliorer l'affichage sur mobile du Journal d'Audit */
+    @media (max-width: 768px) {
+        .filters-bar form {
+            flex-direction: column;
+            width: 100%;
+        }
+        /* On s'assure que tous les champs de filtre (y compris les dates) prennent toute la largeur */
+        .filter-wrap, .filter-select, .btn-sm {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        /* Ajustement de la pagination */
+        .pagination {
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .pagination-info {
+            text-align: center;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="card">
     <div class="card-header">
@@ -28,8 +55,9 @@
             </select>
             <input type="date" name="date_debut" class="filter-select" value="{{ request('date_debut') }}" placeholder="Date début">
             <input type="date" name="date_fin" class="filter-select" value="{{ request('date_fin') }}" placeholder="Date fin">
+            
             <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
-            <a href="{{ route('audit.index') }}" class="btn btn-outline btn-sm">Reset</a>
+            <a href="{{ route('audit.index') }}" class="btn btn-outline btn-sm" style="text-align: center;">Reset</a>
         </form>
     </div>
 

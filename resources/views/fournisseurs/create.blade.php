@@ -146,8 +146,8 @@
 
 <div class="form-card">
     <div class="form-card-footer">
-        <a href="{{ route('fournisseurs.index') }}" class="btn btn-outline">Annuler</a>
-        <button type="submit" class="btn btn-primary">
+        <a href="{{ route('fournisseurs.index') }}" class="btn btn-outline" style="text-align: center; justify-content: center;">Annuler</a>
+        <button type="submit" class="btn btn-primary" style="justify-content: center;">
             <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
             Enregistrer
         </button>

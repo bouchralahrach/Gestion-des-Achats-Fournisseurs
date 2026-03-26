@@ -5,6 +5,81 @@
     <a href="{{ route('commandes.index') }}">Commandes</a> <span>›</span> Nouveau
 @endsection
 
+@push('styles')
+<style>
+    /* --- CSS spécifique pour rendre le tableau de saisie responsive --- */
+    
+    @media (max-width: 992px) {
+        /* On cache l'en-tête du tableau sur mobile */
+        .table-wrap thead {
+            display: none;
+        }
+
+        /* Chaque ligne (TR) devient une "carte" avec bordure */
+        #lignes-body tr {
+            display: block;
+            border: 2px solid #EDF2F7;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            padding: 16px;
+            background: white;
+            position: relative; /* Pour positionner le bouton supprimer */
+        }
+
+        /* Chaque cellule (TD) s'affiche en bloc */
+        #lignes-body td {
+            display: block;
+            border: none;
+            padding: 8px 0;
+            text-align: left !important;
+        }
+
+        /* On ajoute des fausses "étiquettes" avant les champs de saisie pour savoir à quoi ils correspondent */
+        #lignes-body td:nth-child(1)::before { content: "Désignation :"; font-size: 11px; font-weight: 600; color: var(--gris); text-transform: uppercase; display: block; margin-bottom: 4px; }
+        #lignes-body td:nth-child(2)::before { content: "Quantité :"; font-size: 11px; font-weight: 600; color: var(--gris); text-transform: uppercase; display: block; margin-bottom: 4px; }
+        #lignes-body td:nth-child(3)::before { content: "Unité :"; font-size: 11px; font-weight: 600; color: var(--gris); text-transform: uppercase; display: block; margin-bottom: 4px; }
+        #lignes-body td:nth-child(4)::before { content: "Prix Unitaire (HT) :"; font-size: 11px; font-weight: 600; color: var(--gris); text-transform: uppercase; display: block; margin-bottom: 4px; }
+        #lignes-body td:nth-child(5)::before { content: "Remise (%) :"; font-size: 11px; font-weight: 600; color: var(--gris); text-transform: uppercase; display: block; margin-bottom: 4px; }
+        #lignes-body td:nth-child(6)::before { content: "Total Ligne (HT) :"; font-size: 11px; font-weight: 600; color: var(--gris); text-transform: uppercase; display: block; margin-bottom: 4px; }
+
+        /* Le bouton supprimer se place en haut à droite de la "carte" */
+        #lignes-body td:nth-child(7) {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 0;
+        }
+
+        /* Forcer l'alignement des inputs sur mobile */
+        .qte, .pu, .remise, .total-ligne { text-align: left !important; }
+
+        /* --- Réorganisation du pied de tableau (Totaux) --- */
+        .table-wrap tfoot {
+            display: block;
+            background: #FAFCFF;
+            border-top: 2px solid #EDF2F7;
+            padding: 16px;
+        }
+        .table-wrap tfoot tr { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #EDF2F7; padding: 12px 0; }
+        .table-wrap tfoot tr:last-child { border-bottom: none; }
+        .table-wrap tfoot td { display: block; padding: 0 !important; border: none !important; text-align: left !important; }
+        .table-wrap tfoot td[colspan="5"] { font-size: 14px !important; } /* Agrandir le label des totaux */
+        .table-wrap tfoot td:last-child { display: none; } /* Cacher la colonne vide du bouton supprimer */
+        
+        /* Boutons de soumission en bas */
+        .footer-actions {
+            flex-direction: column-reverse; /* Empile Annuler en bas, Créer en haut */
+            gap: 12px;
+        }
+        .footer-actions .btn {
+            width: 100%;
+            justify-content: center;
+            padding: 12px 16px !important; /* Force la hauteur standard */
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <form method="POST" action="{{ route('commandes.store') }}" id="form-commande">
 @csrf
@@ -149,17 +224,17 @@
             <tfoot>
                 <tr style="background:#FAFCFF">
                     <td colspan="5" style="text-align:right;padding:12px 18px;font-weight:600;color:var(--gris);font-size:12px">Total Hors Taxe</td>
-                    <td style="padding:12px 18px;font-weight:700"><span id="grand-total">0.00 MAD</span></td>
+                    <td style="padding:12px 18px;font-weight:700;text-align:right"><span id="grand-total">0.00 MAD</span></td>
                     <td></td>
                 </tr>
                 <tr style="background:#FAFCFF">
                     <td colspan="5" style="text-align:right;padding:12px 18px;color:var(--gris);font-size:12px">TVA (<span id="tva-display">20</span>%)</td>
-                    <td style="padding:12px 18px"><span id="total-tva">0.00 MAD</span></td>
+                    <td style="padding:12px 18px;text-align:right"><span id="total-tva">0.00 MAD</span></td>
                     <td></td>
                 </tr>
                 <tr style="background:rgba(83,187,90,0.05)">
                     <td colspan="5" style="text-align:right;padding:14px 18px;font-weight:700;font-size:14px">Total TTC</td>
-                    <td style="padding:14px 18px;font-weight:800;font-size:16px;color:var(--vert)"><span id="grand-total-ttc">0.00 MAD</span></td>
+                    <td style="padding:14px 18px;font-weight:800;font-size:16px;color:var(--vert);text-align:right"><span id="grand-total-ttc">0.00 MAD</span></td>
                     <td></td>
                 </tr>
             </tfoot>
@@ -168,7 +243,7 @@
 </div>
 
 {{-- FOOTER --}}
-<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
+<div class="footer-actions" style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
     <a href="{{ route('commandes.index') }}" class="btn btn-outline">
         <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
         Annuler
@@ -208,7 +283,7 @@ function ajouterLigne() {
         <td style="text-align:right"><input type="text" id="total-${i}" class="total-ligne form-control" style="text-align:right;font-weight:700;color:var(--bleu);background:rgba(45,155,214,0.05)" readonly value="0.00"></td>
         <td style="text-align:center">
             <button type="button" onclick="supprimerLigne(${i})" class="action-btn action-delete">
-                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
+                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
             </button>
         </td>
     `;

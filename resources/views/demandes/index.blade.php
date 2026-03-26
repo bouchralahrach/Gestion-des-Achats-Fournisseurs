@@ -3,6 +3,37 @@
 @section('page-title', 'Demandes d\'Achat')
 @section('breadcrumb') Demandes d\'Achat @endsection
 
+@push('styles')
+<style>
+    /* CSS spécifique pour améliorer l'affichage sur mobile de la liste des Demandes */
+    @media (max-width: 768px) {
+        .filters-bar form {
+            flex-direction: column;
+            width: 100%;
+        }
+        .filter-wrap, .filter-select, .btn-sm {
+            width: 100%;
+        }
+        
+        /* On empêche la colonne "Actions" d'être écrasée */
+        .actions-wrap {
+            min-width: 70px; 
+            justify-content: flex-start;
+        }
+
+        /* Ajustement de la pagination */
+        .pagination {
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .pagination-info {
+            text-align: center;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="card">
     <div class="card-header">
@@ -33,7 +64,7 @@
                 <option value="annulee" {{ request('statut')=='annulee'?'selected':'' }}>Annulée</option>
             </select>
             <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
-            <a href="{{ route('demandes.index') }}" class="btn btn-outline btn-sm">Reset</a>
+            <a href="{{ route('demandes.index') }}" class="btn btn-outline btn-sm" style="text-align:center;">Reset</a>
         </form>
     </div>
 
@@ -54,7 +85,7 @@
             <tbody>
                 @forelse($demandes as $demande)
                 <tr>
-                    <td><strong style="color:var(--bleu-clair)">{{ $demande->numero }}</strong></td>
+                    <td><strong style="color:var(--bleu)">{{ $demande->numero }}</strong></td>
                     <td>{{ Str::limit($demande->objet, 40) }}</td>
                     <td>{{ $demande->demandeur->name ?? '—' }}</td>
                     <td>{{ number_format($demande->quantite, 2) }} {{ $demande->unite_mesure }}</td>
@@ -95,4 +126,3 @@
     </div>
 </div>
 @endsection
-

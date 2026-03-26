@@ -3,10 +3,52 @@
 @section('page-title', $fournisseur->raison_sociale)
 @section('breadcrumb') <a href="{{ route('fournisseurs.index') }}">Fournisseurs</a> <span>›</span> {{ $fournisseur->code_fournisseur }} @endsection
 
-@section('content')
-<div style="display:grid;grid-template-columns:1fr 2fr;gap:20px">
+@push('styles')
+<style>
+    /* Structure globale de la page Show */
+    .show-layout {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 20px;
+    }
+    
+    /* Grille des coordonnées */
+    .coordonnees-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
 
-    <!-- Info carte -->
+    /* Rendre responsive sur Tablette et Mobile */
+    @media (max-width: 992px) {
+        .show-layout {
+            grid-template-columns: 1fr; /* On empile la carte profil et les détails */
+        }
+        
+        /* Sur mobile, on affiche les boutons Modifier/Retour côte à côte au lieu de l'un sous l'autre */
+        .btn-actions-mobile {
+            display: flex;
+            flex-direction: row !important;
+            gap: 10px;
+        }
+        .btn-actions-mobile .btn {
+            flex: 1; /* Chaque bouton prend la moitié de l'espace */
+        }
+    }
+
+    /* Sur les très petits écrans (téléphones) */
+    @media (max-width: 576px) {
+        .coordonnees-grid {
+            grid-template-columns: 1fr; /* On empile les adresses, emails, etc. */
+            gap: 20px;
+        }
+    }
+</style>
+@endpush
+
+@section('content')
+<div class="show-layout">
+
     <div>
         <div class="card" style="margin-bottom:20px">
             <div class="form-card-body" style="padding:24px;text-align:center">
@@ -17,7 +59,8 @@
                 <div style="font-size:12px;color:var(--gris);margin-bottom:12px">{{ $fournisseur->code_fournisseur }}</div>
                 <span class="badge badge-{{ $fournisseur->statut }}">{{ ucfirst(str_replace('_',' ',$fournisseur->statut)) }}</span>
             </div>
-            <div style="padding:0 24px 24px;display:flex;flex-direction:column;gap:12px">
+            
+            <div class="btn-actions-mobile" style="padding:0 24px 24px;display:flex;flex-direction:column;gap:12px">
                 @can('fournisseurs.modifier')
                 <a href="{{ route('fournisseurs.edit', $fournisseur) }}" class="btn btn-primary" style="justify-content:center">
                     <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -28,7 +71,6 @@
             </div>
         </div>
 
-        <!-- Stats -->
         <div class="card">
             <div class="card-header"><div class="card-title">Statistiques</div></div>
             <div style="padding:20px;display:flex;flex-direction:column;gap:16px">
@@ -52,13 +94,11 @@
         </div>
     </div>
 
-    <!-- Détails -->
     <div style="display:flex;flex-direction:column;gap:20px">
 
-        <!-- Coordonnées -->
         <div class="card">
             <div class="card-header"><div class="card-title">Coordonnées</div></div>
-            <div style="padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div class="coordonnees-grid" style="padding:20px;">
                 <div>
                     <div style="font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Email</div>
                     <div style="font-size:14px">{{ $fournisseur->email ?? '—' }}</div>
@@ -86,7 +126,6 @@
             </div>
         </div>
 
-        <!-- Dernières commandes -->
         <div class="card">
             <div class="card-header">
                 <div class="card-title">Historique des commandes</div>

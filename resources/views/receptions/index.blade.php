@@ -3,6 +3,37 @@
 @section('page-title', 'Bons de Réception')
 @section('breadcrumb') Réceptions @endsection
 
+@push('styles')
+<style>
+    /* CSS spécifique pour améliorer l'affichage sur mobile de la liste des Réceptions */
+    @media (max-width: 768px) {
+        .filters-bar form {
+            flex-direction: column;
+            width: 100%;
+        }
+        .filter-wrap, .filter-select, .btn-sm {
+            width: 100%;
+        }
+        
+        /* On empêche la colonne "Actions" d'être écrasée */
+        .actions-wrap {
+            min-width: 60px; /* Seulement un bouton Voir ici, donc 60px suffisent */
+            justify-content: flex-start;
+        }
+
+        /* Ajustement de la pagination */
+        .pagination {
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .pagination-info {
+            text-align: center;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="card">
     <div class="card-header">
@@ -33,7 +64,7 @@
                 <option value="avec_reserves" {{ request('etat')=='avec_reserves'?'selected':'' }}>Avec réserves</option>
             </select>
             <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
-            <a href="{{ route('receptions.index') }}" class="btn btn-outline btn-sm">Reset</a>
+            <a href="{{ route('receptions.index') }}" class="btn btn-outline btn-sm" style="text-align:center;">Reset</a>
         </form>
     </div>
 

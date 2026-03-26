@@ -3,6 +3,23 @@
 @section('page-title', 'Nouveau Bon de Réception')
 @section('breadcrumb') <a href="{{ route('receptions.index') }}">Réceptions</a> <span>›</span> Nouveau @endsection
 
+@push('styles')
+<style>
+    /* CSS spécifique pour s'assurer que le footer s'affiche bien sur mobile */
+    @media (max-width: 768px) {
+        .form-card-footer {
+            display: flex;
+            flex-direction: column-reverse; /* Met le bouton Enregistrer au-dessus du bouton Annuler */
+            gap: 12px;
+        }
+        .form-card-footer .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <form method="POST" action="{{ route('receptions.store') }}">
 @csrf
@@ -60,8 +77,8 @@
 
     </div>
     <div class="form-card-footer">
-        <a href="{{ route('receptions.index') }}" class="btn btn-outline">Annuler</a>
-        <button type="submit" class="btn btn-primary">
+        <a href="{{ route('receptions.index') }}" class="btn btn-outline" style="text-align: center;">Annuler</a>
+        <button type="submit" class="btn btn-primary" style="text-align: center;">
             <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
             Enregistrer la réception
         </button>

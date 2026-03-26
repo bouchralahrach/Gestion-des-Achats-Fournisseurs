@@ -3,6 +3,22 @@
 @section('page-title', 'Nouvelle Demande d\'Achat')
 @section('breadcrumb') <a href="{{ route('demandes.index') }}">Demandes</a> <span>›</span> Nouvelle @endsection
 
+@push('styles')
+<style>
+    /* Sur mobile, on s'assure que les 3 boutons s'empilent bien */
+    @media (max-width: 768px) {
+        .form-card-footer {
+            flex-direction: column-reverse; /* Soumettre en haut, Annuler en bas */
+            gap: 12px;
+        }
+        .form-card-footer .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <form method="POST" action="{{ route('demandes.store') }}">
 @csrf
@@ -73,9 +89,9 @@
         </div>
     </div>
     <div class="form-card-footer">
-        <a href="{{ route('demandes.index') }}" class="btn btn-outline">Annuler</a>
-        <button type="submit" name="action" value="brouillon" class="btn btn-outline">Enregistrer en brouillon</button>
-        <button type="submit" name="action" value="soumettre" class="btn btn-primary">
+        <a href="{{ route('demandes.index') }}" class="btn btn-outline" style="text-align:center;">Annuler</a>
+        <button type="submit" name="action" value="brouillon" class="btn btn-outline" style="text-align:center;">Enregistrer en brouillon</button>
+        <button type="submit" name="action" value="soumettre" class="btn btn-primary" style="text-align:center;">
             <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             Soumettre
         </button>

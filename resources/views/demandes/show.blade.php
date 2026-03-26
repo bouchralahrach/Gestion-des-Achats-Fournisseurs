@@ -5,13 +5,55 @@
     <a href="{{ route('demandes.index') }}">Demandes</a> <span>›</span> {{ $demande->numero }}
 @endsection
 
-@section('content')
-<div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
+@push('styles')
+<style>
+    /* Structure globale de la page Show (Demandes) */
+    .da-show-layout {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+    }
+    
+    /* Grille des informations internes */
+    .da-details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        padding: 24px;
+    }
 
-    {{-- DÉTAILS --}}
+    /* Rendre responsive sur Tablette et Mobile */
+    @media (max-width: 992px) {
+        .da-show-layout {
+            grid-template-columns: 1fr; /* On empile les détails et les actions */
+        }
+    }
+
+    /* Sur les très petits écrans (téléphones) */
+    @media (max-width: 576px) {
+        .da-details-grid {
+            grid-template-columns: 1fr; /* On empile les informations internes */
+            padding: 16px; /* Un peu moins de padding sur mobile */
+            gap: 16px;
+        }
+        
+        /* Ajustement du header de la carte pour éviter le chevauchement du badge */
+        .card-header-flex {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 10px;
+        }
+    }
+</style>
+@endpush
+
+@section('content')
+<div class="da-show-layout">
+
+    {{-- DÉTAILS (Colonne de gauche sur PC) --}}
     <div>
         <div class="card" style="margin-bottom:20px">
-            <div class="card-header" style="border-left:4px solid var(--bleu);padding-left:20px">
+            <div class="card-header card-header-flex" style="border-left:4px solid var(--bleu);padding-left:20px; display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <div class="card-title">{{ $demande->numero }}</div>
                     <div class="card-subtitle">Créée le {{ $demande->created_at->format('d/m/Y à H:i') }}</div>
@@ -21,7 +63,7 @@
                 </span>
             </div>
 
-            <div style="padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+            <div class="da-details-grid">
                 <div>
                     <div style="font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Objet</div>
                     <div style="font-weight:600;font-size:14px">{{ $demande->objet }}</div>
@@ -100,7 +142,7 @@
         </div>
     </div>
 
-    {{-- ACTIONS --}}
+    {{-- ACTIONS & INFOS (Colonne de droite sur PC) --}}
     <div style="display:flex;flex-direction:column;gap:16px">
         <div class="card">
             <div class="card-header" style="border-left:4px solid var(--orange);padding-left:20px">
@@ -150,8 +192,7 @@
 
                 {{-- Annuler --}}
                 @if(in_array($demande->statut, ['brouillon','soumise']) && $demande->demandeur_id == auth()->id())
-                <form method="POST" action="{{ route('demandes.annuler', $demande) }}"
-                      onsubmit="return confirm('Annuler cette demande ?')">
+                <form method="POST" action="{{ route('demandes.annuler', $demande) }}" onsubmit="return confirm('Annuler cette demande ?')">
                     @csrf
                     <button type="submit" class="btn btn-outline" style="width:100%;justify-content:center;color:#E53E3E;border-color:#E53E3E">
                         Annuler la demande

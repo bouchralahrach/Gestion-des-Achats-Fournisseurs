@@ -3,14 +3,86 @@
 @section('page-title', 'Tableau de bord')
 @section('breadcrumb') Tableau de bord @endsection
 
+@push('styles')
+<style>
+    /* --- Styles Spécifiques au Dashboard --- */
+    
+    /* Bannière Bienvenue */
+    .welcome-banner {
+        background: linear-gradient(135deg, #0A3D62 0%, #063049 100%);
+        border-radius: 16px;
+        padding: 28px 32px;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+    }
+    .welcome-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        z-index: 1;
+        gap: 20px; /* Espace entre le texte et la carte de rôle */
+    }
+    .role-card {
+        background: rgba(241,151,65,0.15);
+        border: 1px solid rgba(241,151,65,0.3);
+        border-radius: 12px;
+        padding: 12px 20px;
+        text-align: center;
+        min-width: 100px;
+    }
+
+    /* Grille pour les listes récentes (Demandes & Commandes) */
+    .recent-lists-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    /* --- MEDIA QUERIES --- */
+    @media (max-width: 992px) {
+        /* Sur tablette, on empile les Demandes et Commandes récentes */
+        .recent-lists-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        /* Sur mobile, on ajuste la bannière de bienvenue */
+        .welcome-banner {
+            padding: 20px 16px; /* Moins de padding sur les côtés */
+        }
+        .welcome-content {
+            flex-direction: column; /* On met la carte de rôle sous le texte */
+            align-items: flex-start;
+        }
+        .welcome-content > div:first-child {
+            /* Le texte principal de bienvenue */
+            font-size: 18px !important;
+        }
+        .role-card {
+            align-self: flex-start; /* Aligne la carte à gauche au lieu du centre */
+            padding: 8px 16px; /* Plus petit sur mobile */
+        }
+        
+        /* Assure que la colonne d'actions des tableaux garde une largeur minimale */
+        .actions-wrap {
+            min-width: 80px;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 
 {{-- BANNIÈRE BIENVENUE --}}
-<div style="background:linear-gradient(135deg,#0A3D62 0%,#063049 100%);border-radius:16px;padding:28px 32px;margin-bottom:24px;position:relative;overflow:hidden">
+<div class="welcome-banner">
     <div style="position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:rgba(241,151,65,0.1);pointer-events:none"></div>
     <div style="position:absolute;bottom:-40px;left:300px;width:160px;height:160px;border-radius:50%;background:rgba(83,187,90,0.08);pointer-events:none"></div>
     <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#F19741,#53BB5A,#2D9BD6)"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1">
+    <div class="welcome-content">
         <div>
             <div style="font-family:'Outfit',sans-serif;font-size:22px;font-weight:800;color:white;margin-bottom:6px">
                 Bonjour, {{ auth()->user()->name }} 👋
@@ -19,7 +91,7 @@
                 {{ now()->locale('fr')->isoFormat('dddd D MMMM YYYY') }} — Bienvenue sur votre tableau de bord SGAF
             </div>
         </div>
-        <div style="background:rgba(241,151,65,0.15);border:1px solid rgba(241,151,65,0.3);border-radius:12px;padding:12px 20px;text-align:center;min-width:100px">
+        <div class="role-card">
             <div style="font-family:'Outfit',sans-serif;font-size:18px;font-weight:800;color:#F19741">
                 {{ ucfirst(auth()->user()->getRoleNames()->first() ?? 'Utilisateur') }}
             </div>
@@ -28,7 +100,7 @@
     </div>
 </div>
 
-{{-- STATS CARDS --}}
+{{-- STATS CARDS (Déjà gérées par app.blade.php) --}}
 <div class="stats-grid" style="margin-bottom:24px">
 
     <div class="stat-card" style="border-top:3px solid #2D9BD6;border-radius:14px">
@@ -77,8 +149,8 @@
 
 </div>
 
-{{-- DEMANDES + COMMANDES --}}
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+{{-- DEMANDES + COMMANDES (Utilisation de la nouvelle classe) --}}
+<div class="recent-lists-grid">
 
     {{-- Demandes récentes --}}
     <div class="card">

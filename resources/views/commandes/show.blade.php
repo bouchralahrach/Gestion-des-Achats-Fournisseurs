@@ -5,14 +5,65 @@
     <a href="{{ route('commandes.index') }}">Commandes</a> <span>›</span> {{ $commande->numero }}
 @endsection
 
+@push('styles')
+<style>
+    /* --- Structure globale de la page Show (Commandes) --- */
+    .bc-show-layout {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+    }
+    
+    /* Grille des informations (Fournisseur, Paiement, etc.) */
+    .bc-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        padding: 24px;
+    }
+
+    /* --- MEDIA QUERIES --- */
+    @media (max-width: 992px) {
+        /* Sur tablette, on empile les colonnes : Détails en haut, Actions/Résumé en bas */
+        .bc-show-layout {
+            grid-template-columns: 1fr; 
+        }
+    }
+
+    @media (max-width: 576px) {
+        /* Sur téléphone, on empile les informations de l'en-tête */
+        .bc-info-grid {
+            grid-template-columns: 1fr;
+            padding: 16px;
+            gap: 16px;
+        }
+
+        /* Ajustement de l'en-tête de la carte pour éviter que le titre et le statut ne se chevauchent */
+        .card-header-flex {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 10px;
+        }
+        
+        /* Les totaux dans le footer du tableau doivent s'adapter */
+        .table-wrap tfoot td {
+            font-size: 13px !important;
+        }
+        .table-wrap tfoot td:last-child {
+            font-size: 14px !important; /* Total TTC */
+        }
+    }
+</style>
+@endpush
+
 @section('content')
-<div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
+<div class="bc-show-layout">
 
     <div style="display:flex;flex-direction:column;gap:20px">
 
         {{-- EN-TÊTE BC --}}
         <div class="card">
-            <div class="card-header" style="border-left:4px solid var(--vert);padding-left:20px">
+            <div class="card-header card-header-flex" style="border-left:4px solid var(--vert);padding-left:20px; display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <div class="card-title">{{ $commande->numero }}</div>
                     <div class="card-subtitle">Créé le {{ $commande->created_at->format('d/m/Y à H:i') }} par {{ $commande->createdBy->name }}</div>
@@ -21,16 +72,17 @@
                     {{ ucfirst(str_replace('_',' ',$commande->statut)) }}
                 </span>
             </div>
-            <div style="padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+            
+            <div class="bc-info-grid">
                 <div>
                     <div style="font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Fournisseur</div>
                     <div style="display:flex;align-items:center;gap:8px">
                         <div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--bleu),var(--vert));display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700;flex-shrink:0">
-                            {{ strtoupper(substr($commande->fournisseur->raison_sociale,0,2)) }}
+                            {{ strtoupper(substr($commande->fournisseur->raison_sociale ?? 'F',0,2)) }}
                         </div>
                         <div>
-                            <div style="font-weight:600;font-size:13px">{{ $commande->fournisseur->raison_sociale }}</div>
-                            <div style="font-size:11px;color:var(--gris)">{{ $commande->fournisseur->code_fournisseur }}</div>
+                            <div style="font-weight:600;font-size:13px">{{ $commande->fournisseur->raison_sociale ?? '—' }}</div>
+                            <div style="font-size:11px;color:var(--gris)">{{ $commande->fournisseur->code_fournisseur ?? '' }}</div>
                         </div>
                     </div>
                 </div>
@@ -103,15 +155,15 @@
                     <tfoot>
                         <tr style="background:#FAFCFF">
                             <td colspan="5" style="text-align:right;padding:12px 20px;font-weight:600;color:var(--gris)">Montant HT</td>
-                            <td style="padding:12px 20px;font-weight:600">{{ number_format($commande->montant_ht,2,',',' ') }} MAD</td>
+                            <td style="padding:12px 20px;font-weight:600;white-space:nowrap">{{ number_format($commande->montant_ht,2,',',' ') }} MAD</td>
                         </tr>
                         <tr style="background:#FAFCFF">
                             <td colspan="5" style="text-align:right;padding:12px 20px;color:var(--gris)">TVA ({{ $commande->tva }}%)</td>
-                            <td style="padding:12px 20px">{{ number_format($commande->montant_ttc - $commande->montant_ht,2,',',' ') }} MAD</td>
+                            <td style="padding:12px 20px;white-space:nowrap">{{ number_format($commande->montant_ttc - $commande->montant_ht,2,',',' ') }} MAD</td>
                         </tr>
                         <tr style="background:rgba(83,187,90,0.05)">
                             <td colspan="5" style="text-align:right;padding:14px 20px;font-weight:700;font-size:15px">Total TTC</td>
-                            <td style="padding:14px 20px;font-weight:700;font-size:16px;color:var(--vert)">
+                            <td style="padding:14px 20px;font-weight:700;font-size:16px;color:var(--vert);white-space:nowrap">
                                 {{ number_format($commande->montant_ttc,2,',',' ') }} MAD
                             </td>
                         </tr>
@@ -158,8 +210,10 @@
         @endif
     </div>
 
-    {{-- ACTIONS --}}
+    {{-- COLONNE DROITE : ACTIONS & RÉSUMÉ --}}
     <div style="display:flex;flex-direction:column;gap:16px">
+        
+        {{-- ACTIONS --}}
         <div class="card">
             <div class="card-header" style="border-left:4px solid var(--orange);padding-left:20px">
                 <div class="card-title">Actions</div>
@@ -211,8 +265,7 @@
                 {{-- Annuler --}}
                 @can('bc.creer')
                 @if(!in_array($commande->statut, ['annulee','soldee']))
-                <form method="POST" action="{{ route('commandes.annuler', $commande) }}"
-                      onsubmit="return confirm('Annuler ce bon de commande ?')">
+                <form method="POST" action="{{ route('commandes.annuler', $commande) }}" onsubmit="return confirm('Annuler ce bon de commande ?')">
                     @csrf
                     <button type="submit" class="btn btn-outline" style="width:100%;justify-content:center;color:#E53E3E;border-color:#E53E3E">
                         Annuler la commande
@@ -268,7 +321,7 @@
                 </div>
                 <div style="display:flex;justify-content:space-between;font-size:13px">
                     <span style="color:var(--gris)">Créé par</span>
-                    <span style="font-weight:500">{{ $commande->createdBy->name }}</span>
+                    <span style="font-weight:500">{{ $commande->createdBy->name ?? '—' }}</span>
                 </div>
             </div>
         </div>

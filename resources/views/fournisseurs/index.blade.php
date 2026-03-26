@@ -3,6 +3,38 @@
 @section('page-title', 'Fournisseurs')
 @section('breadcrumb') Fournisseurs @endsection
 
+@push('styles')
+<style>
+    /* CSS spécifique pour améliorer l'affichage sur mobile de la vue Index */
+    @media (max-width: 768px) {
+        /* On s'assure que les filtres prennent 100% de la largeur sur mobile */
+        .filters-bar form {
+            flex-direction: column;
+            width: 100%;
+        }
+        .filter-wrap, .filter-select, .btn-sm {
+            width: 100%; /* Les champs de recherche et le bouton "Filtrer" prennent toute la largeur */
+        }
+        
+        /* On empêche la colonne "Actions" d'être écrasée dans le tableau */
+        .actions-wrap {
+            min-width: 100px; /* Force une largeur minimum pour que les boutons restent en ligne */
+            justify-content: flex-start;
+        }
+
+        /* Ajustement de la pagination pour mobile */
+        .pagination {
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .pagination-info {
+            text-align: center;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="card">
     <div class="card-header">
@@ -32,7 +64,7 @@
                 <option value="en_qualification" {{ request('statut')=='en_qualification'?'selected':'' }}>En qualification</option>
             </select>
             <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
-            <a href="{{ route('fournisseurs.index') }}" class="btn btn-outline btn-sm">Reset</a>
+            <a href="{{ route('fournisseurs.index') }}" class="btn btn-outline btn-sm" style="text-align:center;">Reset</a>
         </form>
     </div>
 
@@ -72,7 +104,7 @@
                             </a>
                             @endcan
                             @can('fournisseurs.supprimer')
-                            <form method="POST" action="{{ route('fournisseurs.destroy', $f) }}" onsubmit="return confirm('Archiver ce fournisseur ?')">
+                            <form method="POST" action="{{ route('fournisseurs.destroy', $f) }}" onsubmit="return confirm('Archiver ce fournisseur ?')" style="margin:0;">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="action-btn action-delete" title="Archiver">
                                     <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>

@@ -3,6 +3,35 @@
 @section('page-title', 'Suivi des Commandes & Demandes')
 @section('breadcrumb') Suivi Commandes @endsection
 
+@push('styles')
+<style>
+    /* CSS spécifique pour améliorer l'affichage sur mobile de la page Suivi */
+    @media (max-width: 768px) {
+        .filters-bar form {
+            flex-direction: column;
+            width: 100%;
+        }
+        .filter-wrap, .filter-select, .btn-sm {
+            width: 100%;
+        }
+        
+        /* Ajustement de la pagination personnalisée pour mobile */
+        .custom-pagination {
+            flex-direction: column;
+            justify-content: center !important;
+            text-align: center;
+            gap: 16px !important;
+        }
+        
+        /* Ajustement du conteneur des pages pour qu'il s'adapte s'il y a beaucoup de pages */
+        .custom-pagination > div:last-child {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 
 {{-- STATS --}}
@@ -91,7 +120,7 @@
                 <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 Filtrer
             </button>
-            <a href="{{ route('suivi.index') }}" class="btn btn-outline btn-sm">Reset</a>
+            <a href="{{ route('suivi.index') }}" class="btn btn-outline btn-sm" style="text-align: center;">Reset</a>
         </form>
     </div>
 
@@ -178,9 +207,9 @@
         </table>
     </div>
 
-    {{-- PAGINATION --}}
+    {{-- PAGINATION PERSONNALISÉE --}}
     @if($suivi->hasPages())
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-top:1px solid #F0F4F9;flex-wrap:wrap;gap:12px">
+    <div class="custom-pagination" style="display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-top:1px solid #F0F4F9;flex-wrap:wrap;gap:12px">
         <div style="font-size:12px;color:var(--gris)">
             Affichage <strong>{{ $suivi->firstItem() }}</strong> – <strong>{{ $suivi->lastItem() }}</strong> sur <strong>{{ $suivi->total() }}</strong> résultats
         </div>

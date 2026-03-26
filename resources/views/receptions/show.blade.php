@@ -5,14 +5,72 @@
     <a href="{{ route('receptions.index') }}">Réceptions</a> <span>›</span> {{ $reception->numero }}
 @endsection
 
+@push('styles')
+<style>
+    /* --- Structure globale de la page Show (Réceptions) --- */
+    .br-show-layout {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+    }
+    
+    /* Grille des informations (Fournisseur, Date, etc.) */
+    .br-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        padding: 24px;
+    }
+
+    /* Grille des signatures */
+    .br-signatures-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        padding: 28px;
+    }
+
+    /* --- MEDIA QUERIES --- */
+    @media (max-width: 992px) {
+        /* Sur tablette, on empile les colonnes : Détails en haut, Actions/Infos en bas */
+        .br-show-layout {
+            grid-template-columns: 1fr; 
+        }
+    }
+
+    @media (max-width: 576px) {
+        /* Sur téléphone, on empile les informations de l'en-tête */
+        .br-info-grid {
+            grid-template-columns: 1fr;
+            padding: 16px;
+            gap: 16px;
+        }
+
+        /* On empile aussi les signatures pour qu'elles aient de la place */
+        .br-signatures-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+            padding: 16px;
+        }
+
+        /* Ajustement de l'en-tête de la carte pour éviter que le titre et le statut ne se chevauchent */
+        .card-header-flex {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 10px;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
-<div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
+<div class="br-show-layout">
 
     <div style="display:flex;flex-direction:column;gap:20px">
 
         {{-- EN-TÊTE BR --}}
         <div class="card">
-            <div class="card-header" style="border-left:4px solid var(--bleu);padding-left:20px">
+            <div class="card-header card-header-flex" style="border-left:4px solid var(--bleu);padding-left:20px; display:flex; justify-content:space-between; align-items:center;">
                 <div>
                     <div class="card-title">{{ $reception->numero }}</div>
                     <div class="card-subtitle">Réception du {{ \Carbon\Carbon::parse($reception->date_reception)->format('d/m/Y') }}</div>
@@ -21,7 +79,8 @@
                     {{ ucfirst(str_replace('_',' ',$reception->etat)) }}
                 </span>
             </div>
-            <div style="padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+            
+            <div class="br-info-grid">
                 <div>
                     <div style="font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Date de réception</div>
                     <div style="font-weight:600">{{ \Carbon\Carbon::parse($reception->date_reception)->format('d/m/Y') }}</div>
@@ -72,8 +131,10 @@
         {{-- ARTICLES RÉCEPTIONNÉS --}}
         <div class="card">
             <div class="card-header" style="border-left:4px solid var(--orange);padding-left:20px">
-                <div class="card-title">Articles & Services Réceptionnés</div>
-                <div class="card-subtitle">Depuis le bon de commande {{ $reception->bonCommande->numero }}</div>
+                <div>
+                    <div class="card-title">Articles & Services Réceptionnés</div>
+                    <div class="card-subtitle">Depuis le bon de commande {{ $reception->bonCommande->numero }}</div>
+                </div>
             </div>
             <div class="table-wrap">
                 <table>
@@ -92,8 +153,8 @@
                             <td style="font-weight:500">{{ $ligne->designation }}</td>
                             <td>{{ number_format($ligne->quantite,2,',',' ') }}</td>
                             <td style="color:var(--gris)">{{ $ligne->unite }}</td>
-                            <td>{{ number_format($ligne->prix_unitaire,2,',',' ') }} MAD</td>
-                            <td><strong>{{ number_format($ligne->montant_total,2,',',' ') }} MAD</strong></td>
+                            <td style="white-space:nowrap">{{ number_format($ligne->prix_unitaire,2,',',' ') }} MAD</td>
+                            <td style="white-space:nowrap"><strong>{{ number_format($ligne->montant_total,2,',',' ') }} MAD</strong></td>
                         </tr>
                         @empty
                         <tr><td colspan="5">
@@ -106,15 +167,15 @@
                     <tfoot>
                         <tr style="background:#FAFCFF">
                             <td colspan="4" style="text-align:right;padding:12px 20px;font-weight:600;color:var(--gris)">Montant HT</td>
-                            <td style="padding:12px 20px;font-weight:600">{{ number_format($reception->bonCommande->montant_ht,2,',',' ') }} MAD</td>
+                            <td style="padding:12px 20px;font-weight:600;white-space:nowrap">{{ number_format($reception->bonCommande->montant_ht,2,',',' ') }} MAD</td>
                         </tr>
                         <tr style="background:#FAFCFF">
                             <td colspan="4" style="text-align:right;padding:12px 20px;color:var(--gris)">TVA ({{ $reception->bonCommande->tva }}%)</td>
-                            <td style="padding:12px 20px">{{ number_format($reception->bonCommande->montant_ttc - $reception->bonCommande->montant_ht,2,',',' ') }} MAD</td>
+                            <td style="padding:12px 20px;white-space:nowrap">{{ number_format($reception->bonCommande->montant_ttc - $reception->bonCommande->montant_ht,2,',',' ') }} MAD</td>
                         </tr>
                         <tr style="background:rgba(83,187,90,0.05)">
                             <td colspan="4" style="text-align:right;padding:14px 20px;font-weight:700;font-size:15px">Total TTC</td>
-                            <td style="padding:14px 20px;font-weight:800;font-size:16px;color:var(--vert)">
+                            <td style="padding:14px 20px;font-weight:800;font-size:16px;color:var(--vert);white-space:nowrap">
                                 {{ number_format($reception->bonCommande->montant_ttc,2,',',' ') }} MAD
                             </td>
                         </tr>
@@ -128,7 +189,7 @@
             <div class="card-header">
                 <div class="card-title">Signatures</div>
             </div>
-            <div style="padding:28px;display:grid;grid-template-columns:1fr 1fr;gap:40px">
+            <div class="br-signatures-grid">
                 <div style="text-align:center">
                     <div style="font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">Signature Fournisseur (Livreur)</div>
                     <div style="height:80px;border-bottom:2px dashed #EDF2F7;margin-bottom:12px"></div>
@@ -143,8 +204,10 @@
         </div>
     </div>
 
-    {{-- ACTIONS --}}
+    {{-- COLONNE DROITE --}}
     <div style="display:flex;flex-direction:column;gap:16px">
+        
+        {{-- ACTIONS --}}
         <div class="card">
             <div class="card-header" style="border-left:4px solid var(--orange);padding-left:20px">
                 <div class="card-title">Actions</div>

@@ -4,6 +4,81 @@
 @section('page-title', 'Modifier ' . $commande->numero)
 @section('breadcrumb') Commandes / {{ $commande->numero }} / Modifier @endsection
 
+@push('styles')
+<style>
+    /* --- CSS spécifique pour rendre le tableau de saisie responsive (identique à create) --- */
+    
+    @media (max-width: 992px) {
+        /* On cache l'en-tête du tableau sur mobile */
+        .table-wrap thead {
+            display: none;
+        }
+
+        /* Chaque ligne (TR) devient une "carte" avec bordure */
+        #lignesBody tr {
+            display: block;
+            border: 2px solid #EDF2F7;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            padding: 16px;
+            background: white;
+            position: relative; /* Pour positionner le bouton supprimer */
+        }
+
+        /* Chaque cellule (TD) s'affiche en bloc */
+        #lignesBody td {
+            display: block;
+            border: none;
+            padding: 8px 0;
+            text-align: left !important;
+        }
+
+        /* Fausses étiquettes pour guider l'utilisateur sur mobile */
+        #lignesBody td:nth-child(1)::before { content: "Désignation :"; font-size: 11px; font-weight: 600; color: var(--gris); text-transform: uppercase; display: block; margin-bottom: 4px; }
+        #lignesBody td:nth-child(2)::before { content: "Quantité :"; font-size: 11px; font-weight: 600; color: var(--gris); text-transform: uppercase; display: block; margin-bottom: 4px; }
+        #lignesBody td:nth-child(3)::before { content: "Unité :"; font-size: 11px; font-weight: 600; color: var(--gris); text-transform: uppercase; display: block; margin-bottom: 4px; }
+        #lignesBody td:nth-child(4)::before { content: "Prix Unitaire (HT) :"; font-size: 11px; font-weight: 600; color: var(--gris); text-transform: uppercase; display: block; margin-bottom: 4px; }
+        #lignesBody td:nth-child(5)::before { content: "Remise (%) :"; font-size: 11px; font-weight: 600; color: var(--gris); text-transform: uppercase; display: block; margin-bottom: 4px; }
+        #lignesBody td:nth-child(6)::before { content: "Total Ligne (HT) :"; font-size: 11px; font-weight: 600; color: var(--gris); text-transform: uppercase; display: block; margin-bottom: 4px; }
+
+        /* Le bouton supprimer se place en haut à droite de la "carte" */
+        #lignesBody td:nth-child(7) {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 0;
+        }
+
+        /* Forcer l'alignement des inputs sur mobile */
+        .quantite, .prix, .remise { text-align: left !important; }
+
+        /* --- Réorganisation du pied de tableau (Totaux) --- */
+        .table-wrap tfoot {
+            display: block;
+            background: #FAFCFF;
+            border-top: 2px solid #EDF2F7;
+            padding: 16px;
+        }
+        .table-wrap tfoot tr { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #EDF2F7; padding: 12px 0; }
+        .table-wrap tfoot tr:last-child { border-bottom: none; }
+        .table-wrap tfoot td { display: block; padding: 0 !important; border: none !important; text-align: left !important; }
+        .table-wrap tfoot td[colspan="5"] { font-size: 14px !important; } 
+        .table-wrap tfoot td:last-child { display: none; } /* Cacher la colonne vide du bouton supprimer */
+        
+        /* Boutons de soumission en bas */
+        .footer-actions {
+            display: flex;
+            flex-direction: column-reverse; /* Empile Annuler en bas, Créer en haut */
+            gap: 12px;
+        }
+        .footer-actions .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 
 <form method="POST" action="{{ route('commandes.update', $commande) }}" id="commandeForm">
@@ -21,7 +96,7 @@
                     <select name="fournisseur_id" id="fournisseur_id" class="form-control @error('fournisseur_id') is-invalid @enderror" required>
                         <option value="">Sélectionner un fournisseur...</option>
                         @foreach($fournisseurs as $fournisseur)
-                        <option value="{{ $fournisseur->id }}" {{ old('fournisseur_id', $commande->fournisseur_id) == $fournisseur->id ? 'selected' : '' }}>{{ $fournisseur->nom }}</option>
+                        <option value="{{ $fournisseur->id }}" {{ old('fournisseur_id', $commande->fournisseur_id) == $fournisseur->id ? 'selected' : '' }}>{{ $fournisseur->nom ?? $fournisseur->raison_sociale }}</option>
                         @endforeach
                     </select>
                     @error('fournisseur_id')
@@ -179,7 +254,7 @@
         </div>
     </div>
 
-    <div class="form-card-footer" style="margin-top: 20px;">
+    <div class="form-card-footer footer-actions" style="margin-top: 20px; display:flex; justify-content:space-between;">
         <a href="{{ route('commandes.show', $commande) }}" class="btn btn-outline">Annuler</a>
         <button type="submit" class="btn btn-primary">
             <svg viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -270,4 +345,3 @@ calculateTotals();
 @endpush
 
 @endsection
-

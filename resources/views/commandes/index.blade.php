@@ -3,6 +3,37 @@
 @section('page-title', 'Bons de Commande')
 @section('breadcrumb') Bons de Commande @endsection
 
+@push('styles')
+<style>
+    /* CSS spécifique pour améliorer l'affichage sur mobile de la liste des Bons de Commande */
+    @media (max-width: 768px) {
+        .filters-bar form {
+            flex-direction: column;
+            width: 100%;
+        }
+        .filter-wrap, .filter-select, .btn-sm {
+            width: 100%;
+        }
+        
+        /* On empêche la colonne "Actions" d'être écrasée */
+        .actions-wrap {
+            min-width: 100px; /* Un peu plus large car il y a 3 boutons potentiels (voir, edit, pdf) */
+            justify-content: flex-start;
+        }
+
+        /* Ajustement de la pagination */
+        .pagination {
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .pagination-info {
+            text-align: center;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="card">
 
@@ -47,7 +78,7 @@
                 @endforeach
             </select>
             <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
-            <a href="{{ route('commandes.index') }}" class="btn btn-outline btn-sm">Reset</a>
+            <a href="{{ route('commandes.index') }}" class="btn btn-outline btn-sm" style="text-align:center;">Reset</a>
         </form>
     </div>
 
