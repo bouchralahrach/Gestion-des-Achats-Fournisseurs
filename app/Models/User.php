@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+// 1. Add this import
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use Notifiable, HasRoles;
+    // 2. Add HasFactory here
+    use Notifiable, HasRoles, HasFactory;
 
     protected $fillable = [
         'name',
