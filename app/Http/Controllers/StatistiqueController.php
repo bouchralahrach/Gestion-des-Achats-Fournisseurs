@@ -21,11 +21,11 @@ class StatistiqueController extends Controller
             'taux_conformite'     => $this->calculerTauxConformite(),
         ];
 
-        // Commandes par mois (12 derniers mois)
-        $commandesParMois = BonCommande::selectRaw('MONTH(created_at) as mois, YEAR(created_at) as annee, COUNT(*) as total, SUM(montant_ttc) as montant')
+        // Commandes par mois (12 derniers mois) - Fixed for PostgreSQL
+        $commandesParMois = BonCommande::selectRaw('EXTRACT(MONTH FROM created_at) as mois, EXTRACT(YEAR FROM created_at) as annee, COUNT(*) as total, SUM(montant_ttc) as montant')
             ->whereYear('created_at', date('Y'))
-            ->groupBy('mois', 'annee')
-            ->orderBy('mois')
+            ->groupByRaw('EXTRACT(YEAR FROM created_at), EXTRACT(MONTH FROM created_at)')
+            ->orderByRaw('EXTRACT(MONTH FROM created_at) ASC')
             ->get();
 
         // Top 5 fournisseurs
