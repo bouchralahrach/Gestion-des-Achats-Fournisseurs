@@ -12,6 +12,10 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Créer les rôles manquants
+        Role::firstOrCreate(['name' => 'admin']);
+        Role::firstOrCreate(['name' => 'acheteur']);
+        Role::firstOrCreate(['name' => 'demandeur']);
+        Role::firstOrCreate(['name' => 'validateur']);
         Role::firstOrCreate(['name' => 'magasinier']);
         Role::firstOrCreate(['name' => 'comptable']);
 
